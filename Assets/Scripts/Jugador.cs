@@ -20,40 +20,46 @@ public class Jugador : MonoBehaviour
     private int monedas;
     public TMP_Text textoMonedas;
 
-    public int vidaMaxima = 3; // Vida inicial del jugador
+    public int vidaMaxima = 6;
     private int vidaActual;
 
-    public float tiempoInvencible = 1f; // Tiempo que el jugador no puede recibir daño tras un golpe
+    public float tiempoInvencible = 1f;
     private bool invencible = false;
+
+    private VidaUI vidaUI; // Referencia al script de los corazones
+
 
     void Start()
     {
         cuerpo2D = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
 
-        vidaActual = vidaMaxima; // Inicializar vida
+        vidaActual = vidaMaxima;
         textoMonedas.text = monedas.ToString();
+
+        vidaUI = FindFirstObjectByType<VidaUI>();
+        if (vidaUI != null)
+        {
+            vidaUI.ActualizarVidas(vidaActual); 
+        }
+       
     }
 
     void Update()
     {
-        // Movimiento horizontal
         movimientoHorizontal = Input.GetAxisRaw("Horizontal");
         cuerpo2D.linearVelocity = new Vector2(movimientoHorizontal * velocidad, cuerpo2D.linearVelocity.y);
 
-        // Cambiar orientación del personaje
         if (movimientoHorizontal != 0)
         {
             transform.localScale = new Vector3(Mathf.Sign(movimientoHorizontal), 1, 1);
         }
 
-        // Saltar
         if (Input.GetButtonDown("Jump") && enSuelo)
         {
             cuerpo2D.linearVelocity = new Vector2(cuerpo2D.linearVelocity.x, fuerzaSalto);
         }
 
-        // ANIMACIONES
         animator.SetFloat("VelocidadVertical", cuerpo2D.linearVelocity.y);
         animator.SetBool("enSuelo", enSuelo);
 
@@ -78,46 +84,66 @@ public class Jugador : MonoBehaviour
         }
         else if (collision.CompareTag("trampa"))
         {
-            RecibirDanio(1); // Recibe 1 de daño al tocar la trampa
+            RecibirDanio(1);
         }
         else if (collision.CompareTag("barril"))
         {
-            // Calcular dirección del knockback
             Vector2 knockbackDir = (cuerpo2D.position - (Vector2)collision.transform.position).normalized;
 
-            // Aplicar fuerza
             cuerpo2D.linearVelocity = Vector2.zero;
             cuerpo2D.AddForce(knockbackDir * 3, ForceMode2D.Impulse);
 
-            // Desactivar colliders del barril
             BoxCollider2D[] colliders = collision.gameObject.GetComponents<BoxCollider2D>();
             foreach (BoxCollider2D col in colliders)
             {
                 col.enabled = false;
             }
 
-            // Activar Animator y destruir
             collision.GetComponent<Animator>().enabled = true;
             Destroy(collision.gameObject, 0.5f);
         }
+        else if (collision.CompareTag("bomba"))
+        {
+            // Hacer da�o al jugador
+            RecibirDanio(1);
+
+            // Activar la animaci�n de la bomba
+            Animator bombaAnimator = collision.GetComponent<Animator>();
+            if (bombaAnimator != null)
+            {
+                bombaAnimator.enabled = true;
+            }
+
+            // Destruir la bomba despu�s de la animaci�n
+            float tiempoExplosion = 0.5f;
+            Destroy(collision.gameObject, tiempoExplosion);
+        }
+
+
+
     }
 
-    private void RecibirDanio(int cantidad)
+    public void RecibirDanio(int cantidad)
     {
         if (!invencible)
         {
             vidaActual -= cantidad;
-            animator.SetTrigger("Danio"); // Asegúrate de tener un Trigger "Danio" en tu Animator
+            animator.SetTrigger("Danio");
             invencible = true;
             Invoke("TerminarInvencible", tiempoInvencible);
 
+            if (vidaUI != null)
+            {
+                vidaUI.ActualizarVidas(vidaActual); 
+            }
+
             if (vidaActual <= 0)
             {
-                // Aquí puedes decidir si reiniciar el nivel o hacer otra cosa
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             }
         }
     }
+
 
     private void TerminarInvencible()
     {

@@ -9,6 +9,7 @@ TagManager:
   - trampa
   - barril
   - Jugador
+  - bomba
   layers:
   - Default
   - TransparentFX

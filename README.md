@@ -1,7 +1,4 @@
 # 🐷 Porky's Cave Adventure 💎
-![WhatsApp Image 2025-12-10 at 4 44 42 PM](https://github.com/user-attachments/assets/1a71d64a-9a3a-479b-b1d4-980ae0db71a7)
-
-
 
 ## 📜 Descripción General del Juego
 
@@ -9,6 +6,7 @@
 
 El jugador controla a **Porky**, un valiente cerdito explorador, que se adentra en cuevas subterráneas llenas de peligros. El objetivo principal es recolectar monedas encantadas mientras se evitan trampas y obstáculos mortales.
 
+![WhatsApp Image 2025-12-10 at 4 44 42 PM](https://github.com/user-attachments/assets/1a71d64a-9a3a-479b-b1d4-980ae0db71a7)
 ---
 
 ## 🎯 Público Objetivo

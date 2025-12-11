@@ -27,6 +27,8 @@ public class Jugador : MonoBehaviour
     private bool invencible = false;
 
     private VidaUI vidaUI; // Referencia al script de los corazones
+    
+    public int totalMonedasEnNivel;
 
 
     void Start()
@@ -81,6 +83,11 @@ public class Jugador : MonoBehaviour
             Destroy(collision.gameObject);
             monedas++;
             textoMonedas.text = monedas.ToString();
+
+            if (monedas >= totalMonedasEnNivel)
+            {
+                GanarNivel();
+            }
         }
         else if (collision.CompareTag("trampa"))
         {
@@ -104,17 +111,17 @@ public class Jugador : MonoBehaviour
         }
         else if (collision.CompareTag("bomba"))
         {
-            // Hacer daño al jugador
+            // Hacer daï¿½o al jugador
             RecibirDanio(1);
 
-            // Activar la animación de la bomba
+            // Activar la animaciï¿½n de la bomba
             Animator bombaAnimator = collision.GetComponent<Animator>();
             if (bombaAnimator != null)
             {
                 bombaAnimator.enabled = true;
             }
 
-            // Destruir la bomba después de la animación
+            // Destruir la bomba despuï¿½s de la animaciï¿½n
             float tiempoExplosion = 0.5f;
             Destroy(collision.gameObject, tiempoExplosion);
         }
@@ -148,5 +155,13 @@ public class Jugador : MonoBehaviour
     private void TerminarInvencible()
     {
         invencible = false;
+    }
+
+    void GanarNivel()
+    {
+        Debug.Log("Â¡Nivel completado!");
+
+        // Si quieres cargar una escena de victoria:
+        SceneManager.LoadScene("PantallaVictoria");
     }
 }
